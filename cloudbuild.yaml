@@ -12,7 +12,7 @@
      name: 'm2_cache'
  # Build the container image
  - name: 'gcr.io/cloud-builders/mvn'
-   args: ['clean', 'package', 'jib:build', '-Dimage=gcr.io/$PROJECT_ID/res-test:$COMMIT_SHA']
+   args: ['clean', 'package', 'jib:build', '-Dimage=gcr.io/$PROJECT_ID/api-test:$COMMIT_SHA']
    volumes:
     - path: '/cache/.m2'
       name: 'm2_cache'
@@ -37,9 +37,9 @@
    args:
    - 'run'
    - 'deploy'
-   - 'res-test'
+   - 'api-test'
    - '--image'
-   - 'gcr.io/$PROJECT_ID/res-test:$COMMIT_SHA'
+   - 'gcr.io/$PROJECT_ID/api-test:$COMMIT_SHA'
    - '--region'
    - 'us-central1'
    - '--memory'
