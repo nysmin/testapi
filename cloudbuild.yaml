@@ -1,0 +1,52 @@
+ steps:
+# Retrieve the cached .m2 directory from GCS
+ - name: 'gcr.io/cloud-builders/gsutil'
+   args:
+   - '-m'
+   - 'rsync'
+   - '-r'
+   - 'gs://test3-308406_bucket/cache/.m2'
+   - '/cache/.m2'
+   volumes:
+   - path: '/cache/.m2'
+     name: 'm2_cache'
+ # Build the container image
+ - name: 'gcr.io/cloud-builders/mvn'
+   args: ['clean', 'package', 'jib:build', '-Dimage=gcr.io/$PROJECT_ID/res-test:$COMMIT_SHA']
+   volumes:
+    - path: '/cache/.m2'
+      name: 'm2_cache'
+   env:
+   - MAVEN_OPTS=-Dmaven.repo.local=/cache/.m2
+# Update cached .m2 directory on GCS with any
+# additional dependencies downloaded during the
+# build.
+ - name: 'gcr.io/cloud-builders/gsutil'
+   args:
+   - '-m'
+   - 'rsync'
+   - '-r'
+   - '/cache/.m2'
+   - 'gs://test3-308406_bucket/cache/.m2/'
+   volumes:
+   - path: '/cache/.m2'
+     name: 'm2_cache'
+ # Deploy container image to Cloud Run
+ - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+   entrypoint: gcloud
+   args:
+   - 'run'
+   - 'deploy'
+   - 'res-test'
+   - '--image'
+   - 'gcr.io/$PROJECT_ID/res-test:$COMMIT_SHA'
+   - '--region'
+   - 'us-central1'
+   - '--memory'
+   - '512M'
+   - '--platform'
+   - 'managed'
+   - '--max-instances'
+   - '500'
+   - '--update-env-vars'
+   - 'RES_BUCKET=test3-308406_bucket'
