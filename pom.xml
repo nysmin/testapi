@@ -9,12 +9,22 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>rest-service</artifactId>
+	<artifactId>api-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>rest-service</name>
+	<name>api-service</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
 		<java.version>1.8</java.version>
+        <gcloud.appId>test3-308406</gcloud.appId>
+        <failOnMissingWebXml>false</failOnMissingWebXml>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.showDeprecation>true</maven.compiler.showDeprecation>
+        <maven.compiler.showWarnings>true</maven.compiler.showWarnings>
+        <maven.compiler.failOnWarning>false</maven.compiler.failOnWarning>
+        <maven.war.filteringDeploymentDescriptors>false</maven.war.filteringDeploymentDescriptors>
+        <jetty.version>9.4.38.v20210224</jetty.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -30,12 +40,36 @@
 	</dependencies>
 
 	<build>
-		<plugins>
+		<!-- <plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-		</plugins>
+		</plugins> -->
+        <finalName>api-cloud-run</finalName>
+        <!-- Optional - for hot reload of the web application when using an IDE Eclipse / IDEA -->
+        <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/classes
+        </outputDirectory>
+        <plugins>
+        <plugin>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-maven-plugin</artifactId>
+            <version>${jetty.version}</version>
+        </plugin>
+        <plugin>
+            <groupId>com.google.cloud.tools</groupId>
+            <artifactId>jib-maven-plugin</artifactId>
+            <version>3.0.0</version>
+            <configuration>
+            <to>
+                <image>gcr.io/${gcloud.appId}/res-test</image>
+            </to>
+            <container>
+                <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+            </container>
+            </configuration>
+        </plugin>
+        </plugins>
 	</build>
 
 </project>
